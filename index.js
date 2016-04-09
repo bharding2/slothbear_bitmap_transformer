@@ -20,12 +20,12 @@ ee.on('bitmap', (data) => {
   bitmap.palette = data.slice(54, bitmap.numColors * 4);
 
   // make second transform for no-palette based
-  // handling different files makes this argv[3]
+  // handling different files makes this argv[2 o 3]
   transform(data, bitmap, process.argv[2]);
   console.log(bitmap.numColors);
 
   fs.writeFile('newfile.bmp', data);
 });
 
-// make it handle different files with argv[2]
+// make it handle different files with argv[2 or 3]
 ee.emit('file_read', __dirname + '/palette-bitmap.bmp');
