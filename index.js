@@ -20,7 +20,7 @@ ee.on('bitmap', (data) => {
   bitmap.palette = data.slice(54, bitmap.numColors * 4);
 
   // make second transform for no-palette based
-  // handling different files makes this argv[2 o 3]
+  // handling different files makes this argv[2 or 3]
   transform(data, bitmap, process.argv[2]);
   console.log(bitmap.numColors);
 
