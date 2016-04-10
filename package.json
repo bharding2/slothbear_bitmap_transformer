@@ -6,6 +6,9 @@
   "directories": {
     "test": "test"
   },
+  "bin": {
+    "slothbear_transform": "./bin/transform"
+  },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha"
   },
