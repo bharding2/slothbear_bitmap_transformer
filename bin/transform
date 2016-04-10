@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // extra point (kind of): installable with npm using a bin
-// (the files save way back in the global node modules folder which is
-// hidden and I don't want to save a junk to people's home dir so meh)
+// (those bitmaps save way back in the global node modules directory which is
+// hidden and I don't want to save a ton of junk to people's home dir, so meh)
 const inquirer = require('inquirer');
 const handleFile = require(__dirname + '/../lib/handleFile');
 
