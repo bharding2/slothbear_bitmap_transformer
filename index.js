@@ -1,1 +1,1 @@
-var transformCLI = module.exports = require(__dirname + '/bin/transform');
+module.exports = require(__dirname + '/bin/transform');
