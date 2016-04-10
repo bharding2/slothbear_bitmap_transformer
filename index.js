@@ -1,31 +1,61 @@
 const fs = require('fs');
+const os = require('os');
 const EE = require('events');
+const inquirer = require('inquirer');
 const transform = require(__dirname + '/lib/transform');
 
 var ee = new EE();
 
-ee.on('file_read', (file) => {
-  fs.readFile(file, (err, data) => {
-    if (err) return console.log(err);
-    ee.emit('bitmap', data);
+var questions = [
+  {
+    type: 'list',
+    name: 'file',
+    message: 'What file would you like to transform?',
+    choices: [
+      __dirname + '/non-palette-bitmap.bmp',
+      __dirname + '/palette-bitmap.bmp',
+      __dirname + '/pikachu.bmp',
+      __dirname + '/christmasbear.bmp'
+     ]
+  },
+  {
+    type: 'list',
+    name: 'transOption',
+    message: 'What transform would you like to perform?',
+    choices: [
+      'greyscale',
+      'redscale',
+      'bluescale',
+      'greenscale',
+      'invert'
+     ]
+  }
+];
+
+ee.on('file_read', () => {
+  // extra point: command line interface
+  // extra point: command line interface that can select the transform
+  inquirer.prompt(questions).then((answers) => {
+    fs.readFile(answers.file, (err, data) => {
+      if (err) return console.log(err);
+      // extra point: handle endianness of different os with a single if
+      if (os.endianness() === 'BE') data.reverse();
+      ee.emit('mapbits', data, answers.transOption);
+    });
   });
 });
 
-ee.on('bitmap', (data) => {
+ee.on('mapbits', (data, transOption) => {
   var bitmap = {};
+
   bitmap.header = data.toString('ascii', 0, 2);
   bitmap.fileSize = data.readUInt32LE(2);
   bitmap.pixelArrayOffset = data.readUInt32LE(10);
   bitmap.numColors = data.readUInt32LE(46);
-  bitmap.palette = data.slice(54, bitmap.numColors * 4);
+  bitmap.bitsPerPixel = data.readUInt16LE(28);
+  if (bitmap.numColors !== 0) bitmap.bitsPerPixel = 32;
 
-  // make second transform for no-palette based
-  // handling different files makes this argv[2 or 3]
-  transform(data, bitmap, process.argv[2]);
-  console.log(bitmap.numColors);
-
-  fs.writeFile('newfile.bmp', data);
+  transform(data, bitmap, transOption);
 });
 
-// make it handle different files with argv[2 or 3]
-ee.emit('file_read', __dirname + '/palette-bitmap.bmp');
+ee.emit('file_read');
